@@ -1,0 +1,32 @@
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowType: COUNT_BASED
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 5
+#      waitDurationInOpenState: 10000
+      failureRateThreshold: 50
+#      eventConsumerBufferSize: 10
+      registerHealthIndicator: true
+    someShared:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 10
+  instances:
+    backendA:
+      baseConfig: default
+      waitDurationInOpenState: 5000
+    backendB:
+      baseConfig: someShared
+
+management:
+  endpoint.health.show-details: always
+  health.circuitbreakers.enabled: true
+  endpoints:
+    web:
+      base-path: /act
+      exposure:
+        include: "*" #평소에는 이렇게 쓰면 보안에 취약 필요한 것만 아래처럼 사용
+#        include: health,info,beans,conditions, metrics, prometheus
+#        exclude: threaddump, heapdump
+  server:
+    port: 8090
